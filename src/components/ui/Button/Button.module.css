@@ -1,0 +1,43 @@
+.button {
+  width: 80px;
+  border-radius: 50%;
+  height: 80px;
+  border: none;
+  font-size: 48px;
+  font-weight: 400;
+	color: #fff;
+	cursor: pointer;
+	transition: opacity 0.3s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.button:active {
+	opacity: 0.5;
+}
+
+.orange {
+	background: #ffb800;
+}
+
+.gray {
+	background: #AEAEAE;
+}
+
+.black {
+	background: #6D6D6D;
+}
+
+.zero {
+	width: 167px;
+	border-radius: 140px;
+}
+
+@media (max-width: 360px) {
+	.button {
+		width: 40px;
+		height: 40px;
+		font-size: 20px;
+	}
+}
