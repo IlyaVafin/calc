@@ -1,17 +1,28 @@
 import { toggleTheme } from '../../utils/theme'
 import { formatter, buttons } from '../../const/constans'
-import { CalculatorStates } from '../../types/types'
 import s from './Calculator.module.css'
 import { Button } from '../ui/Button/Button'
 import { getButtonVariant } from '../../utils/getButtonVariant'
-const Calculator = ({
-	handleButtonClick,
-	states,
-}: {
-	handleButtonClick: (value: string) => void
-	states: CalculatorStates
-}) => {
-	
+import { useEffect } from 'react'
+import { useStatesCalculator } from '../../hooks/useStatesCalculator'
+import { calculatorHandlers } from '../../utils/calculatorHandlers'
+
+const Calculator = () => {
+	const states = useStatesCalculator() // состояния калькулятора :)
+
+	const { handleKeyDown, handleButtonClick } = calculatorHandlers(states)
+
+	useEffect(() => {
+		const listener = (e: KeyboardEvent) => handleKeyDown(e)
+		document.addEventListener('keydown', listener)
+		return () => document.removeEventListener('keydown', listener)
+	}, [handleKeyDown])
+
+	useEffect(() => {
+		document.body.className =
+			states.theme === 'light' ? 'lightTheme' : 'darkTheme'
+	}, [states.theme])
+
 	return (
 		<>
 			<section className={`${s.calculator} ${s[states.theme] || ''}`}>

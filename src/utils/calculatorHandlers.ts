@@ -1,14 +1,11 @@
-import { useEffect } from 'react'
-import { useStatesCalculator } from './hooks/useStatesCalculator'
-import { calculate } from './utils/calculate'
-import { Operator } from './types/types'
-import { clear } from './utils/clear'
-import { toggleSign } from './utils/toggleSign'
-import './App.css'
-import Calculator from './components/Calculator/Calculator'
-const App = () => {
-	const states = useStatesCalculator() // состояния калькулятора :)
+import { CalculatorStates } from '../types/types'
+import { Operator } from '../types/types'
+import { calculate } from './calculate'
+import { clear } from './clear'
+import { toggleSign } from './toggleSign'
 
+export const calculatorHandlers = (states: CalculatorStates) => {
+	
 	const inputDigit = (digit: string) => {
 		if (states.waitingForOperand) {
 			states.setDisplay(digit)
@@ -28,6 +25,10 @@ const App = () => {
 	}
 
 	const performOperation = (nextOperator: Operator | string) => {
+		if (states.display === 'Error') {
+			clear(states)
+			return
+		}
 		const inputValue = parseFloat(states.display)
 		if (states.acc == null) {
 			states.setAcc(inputValue)
@@ -41,6 +42,14 @@ const App = () => {
 	}
 
 	const handleKeyDown = (e: KeyboardEvent) => {
+		if (
+			e.ctrlKey ||
+			e.altKey ||
+			e.metaKey ||
+			(e.key.length > 1 && e.key !== 'Enter' && e.key !== 'Escape')
+		) {
+			return
+		}
 		if (/\d/.test(e.key)) inputDigit(e.key)
 		else if (e.key === '.') inputDot()
 		else if (['+', '-', '*', '/'].includes(e.key)) performOperation(e.key)
@@ -56,21 +65,5 @@ const App = () => {
 		else if (value === '=') performOperation('=')
 		else performOperation(value)
 	}
-
-	useEffect(() => {
-		const listener = (e: KeyboardEvent) => handleKeyDown(e)
-		document.addEventListener('keydown', listener)
-		return () => document.removeEventListener('keydown', listener)
-	}, [handleKeyDown])
-
-	useEffect(() => {
-		document.body.className =
-			states.theme === 'light' ? 'lightTheme' : 'darkTheme'
-	}, [states.theme])
-
-	return (
-    <Calculator states={states}  handleButtonClick={handleButtonClick}/>
-	)
+	return { handleKeyDown, handleButtonClick }
 }
-
-export default App
